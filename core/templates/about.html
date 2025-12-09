@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Mentora Electronics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../static/styles/main.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip logo-icon"></i>
+                    <div class="logo-text">Mentora <span>Electric</span></div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="search-toggle-btn" id="searchToggle">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="user-actions" id="userActions">
+                        <!-- Show when user is not logged in -->
+                        <div class="auth-buttons" id="authButtons">
+                            <a href="auth.html" class="nav-link">
+                                <i class="fas fa-user"></i> Sign In
+                            </a>
+                        </div>
+                        <!-- Show when user is logged in -->
+                        <div class="user-menu" id="userMenu" style="display: none;">
+                            <button class="user-btn" id="userBtn">
+                                <i class="fas fa-user-circle"></i>
+                                <span id="usernameDisplay"></span>
+                            </button>
+                            <div class="user-dropdown" id="userDropdown">
+                                <a href="#" class="dropdown-item" id="favoritesLink">
+                                    <i class="fas fa-heart"></i> Favorites
+                                </a>
+                                <a href="admin.html" class="dropdown-item" id="adminLink" style="display: none;">
+                                    <i class="fas fa-cog"></i> Admin Panel
+                                </a>
+                                <a href="#" class="dropdown-item" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Cart Icon -->
+                        <button class="cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="index.html#services" class="nav-link">
+                        <i class="fas fa-cogs"></i> Services
+                    </a>
+                    <a href="index.html#products" class="nav-link">
+                        <i class="fas fa-box-open"></i> Products
+                    </a>
+                    <a href="about.html" class="nav-link active">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                    <a href="index.html#contact" class="nav-link">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Top search bar -->
+            <div class="top-search-bar" id="topSearchBar">
+                <div class="search-container">
+                    <input type="text" id="topSearchInput" placeholder="Search products..." class="search-input">
+                    <button class="search-close-btn" id="searchClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Hero Section -->
+    <section class="hero about-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">About <span>Mentora Electric</span></h1>
+                <p class="hero-subtitle">Your trusted partner in electronics solutions since 2025</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Content Section -->
+    <section class="section about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Story</h2>
+                    <p>Founded in 2025, Mentora Electric has been at the forefront of providing comprehensive electronics solutions to individuals, businesses, and educational institutions. Our journey began with a simple mission: to make quality electronics components and services accessible to everyone.</p>
+
+                    <h2>Our Mission</h2>
+                    <p>We strive to empower innovation by providing high-quality electronic components, professional services, and expert guidance to electronics enthusiasts, students, and professionals alike.</p>
+
+                    <h2>Our Values</h2>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <i class="fas fa-gem"></i>
+                            <h3>Quality</h3>
+                            <p>We source and provide only the highest quality components and materials for all our products and services.</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-handshake"></i>
+                            <h3>Reliability</h3>
+                            <p>Our customers trust us to deliver consistent, reliable service and support for all their electronics needs.</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>Innovation</h3>
+                            <p>We stay at the cutting edge of electronics technology to bring you the latest components and solutions.</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Community</h3>
+                            <p>We believe in building a strong electronics community through knowledge sharing and support.</p>
+                        </div>
+                    </div>
+
+                    <h2>Our Services</h2>
+                    <p>From PCB design and fabrication to laptop and mobile repair, we offer a comprehensive range of electronics services:</p>
+                    <ul class="services-list">
+                        <li><i class="fas fa-check"></i> Professional PCB Design & Layout</li>
+                        <li><i class="fas fa-check"></i> High-Precision PCB Etching</li>
+                        <li><i class="fas fa-check"></i> Complete PCB Fabrication</li>
+                        <li><i class="fas fa-check"></i> Laptop & Mobile Device Repair</li>
+                        <li><i class="fas fa-check"></i> Component Sourcing & Supply</li>
+                        <li><i class="fas fa-check"></i> Electronics Consultation</li>
+                    </ul>
+
+                    <h2>Why Choose Us?</h2>
+                    <div class="why-us">
+                        <div class="why-item">
+                            <i class="fas fa-award"></i>
+                            <div>
+                                <h4>Expert Team</h4>
+                                <p>Our team consists of experienced electronics engineers and technicians with years of industry experience.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <div>
+                                <h4>Fast Service</h4>
+                                <p>We understand the importance of timely delivery and offer quick turnaround times for all our services.</p>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <i class="fas fa-headset"></i>
+                            <div>
+                                <h4>Customer Support</h4>
+                                <p>We provide excellent after-sales support and technical guidance for all our products and services.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-sidebar">
+                    <div class="sidebar-card">
+                        <h3>Contact Information</h3>
+                        <div class="contact-info">
+                            <p><i class="fas fa-map-marker-alt"></i> Juja - Kiambu, near JKUAT</p>
+                            <p><i class="fas fa-phone"></i> +254 736 994 238</p>
+                            <p><i class="fas fa-envelope"></i> mentoraelectric@gmail.com</p>
+                            <p><i class="fas fa-clock"></i> Mon-Fri: 8am-6pm<br>Sat: 9am-2pm</p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>Quick Links</h3>
+                        <ul class="quick-links">
+                            <li><a href="index.html#products"><i class="fas fa-arrow-right"></i> View Products</a></li>
+                            <li><a href="index.html#services"><i class="fas fa-arrow-right"></i> Our Services</a></li>
+                            <li><a href="index.html#contact"><i class="fas fa-arrow-right"></i> Get Quote</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Mentora Electronics</h3>
+                    <p>Providing professional electronics services and products with precision and excellence since 2025.</p>
+                   <div class="social-links">
+ <!--   <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a> -->
+    <a href="https://x.com/MentoraElectric?t=mju7Tha8NE97V9eofr1Ymw&s=09" class="social-link"><i class="fab fa-twitter"></i></a>
+    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+ <!--   <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a> -->
+    <a href="https://youtube.com/@mentoraelectric?si=PpTPBpLnRp9KwQwF" class="social-link"><i class="fab fa-youtube"></i></a>
+    <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+    <a href="https://mentorareviews.vercel.app/index.html" class="social-link" title="View Reviews"><i class="fas fa-comments"></i></a>
+</div>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="service-modal-link" data-service="pcb-design">PCB Design</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="etching">Etching Services</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="fabrication">Fabrication</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="laptop-repair">Laptop Repair</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="mobile-repair">Mobile Repair</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Products</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html#products">Electronic Components</a></li>
+                        <li><a href="index.html#products">Electronics Gadgets</a></li>
+                        <li><a href="index.html#products">DIY Modules</a></li>
+                        <li><a href="index.html#products">Oraimo Products</a></li>
+                        <li><a href="index.html#products">Laptops</a></li>
+                        <li><a href="index.html#products">Featured Products</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Juja - Kiambu, near Jomo Kenyatta University of Agriculture & Technology</li>
+                        <li><i class="fas fa-phone"></i> +254 736 994 238</li>
+                        <li><i class="fas fa-envelope"></i> mentoraelectric@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 8am-6pm, Sat: 9am-2pm</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mentora Electronics. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

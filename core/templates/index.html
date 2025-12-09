@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L6DH90XNEQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L6DH90XNEQ');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentora Electronics | PCB Design & Repair Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../static/styles/main.css">
+    <!-- Add these scripts in the HEAD section -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<!-- Then your other scripts -->
+<script src="auth.js"></script>
+<script src="script.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip logo-icon"></i>
+                    <div class="logo-text">Mentora <span>Electric</span></div>
+                </div>
+
+                <!-- Updated header actions with auth and cart -->
+                <div class="header-actions">
+                    <button class="search-toggle-btn" id="searchToggle">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="user-actions" id="userActions">
+                        <!-- Show when user is not logged in -->
+                        <div class="auth-buttons" id="authButtons">
+                            <a href="auth.html" class="nav-link">
+                                <i class="fas fa-user"></i> Sign In
+                            </a>
+                        </div>
+                        <!-- Show when user is logged in -->
+                        <div class="user-menu" id="userMenu" style="display: none;">
+                            <button class="user-btn" id="userBtn">
+                                <i class="fas fa-user-circle" id="userAvatar"></i>
+                                <span id="usernameDisplay"></span>
+                            </button>
+                            <div class="user-dropdown" id="userDropdown">
+                                <a href="#" class="dropdown-item" id="profileLink">
+                                    <i class="fas fa-user-edit"></i> Edit Profile
+                                </a>
+                                <a href="#favorites" class="dropdown-item" id="favoritesLink">
+                                    <i class="fas fa-heart"></i> Favorites
+                                </a>
+                                <a href="admin.html" class="dropdown-item" id="adminLink" style="display: none;">
+                                    <i class="fas fa-cog"></i> Admin Panel
+                                </a>
+                                <a href="#" class="dropdown-item" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Cart Icon -->
+                        <button class="cart-btn" id="cartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <nav class="nav">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="#services" class="nav-link">
+                        <i class="fas fa-cogs"></i> Services
+                    </a>
+                    <a href="#products" class="nav-link">
+                        <i class="fas fa-box-open"></i> Products
+                    </a>
+                    <a href="#favorites" class="nav-link" id="favoritesNavLink" style="display: none;">
+                        <i class="fas fa-heart"></i> Favorites
+                    </a>
+                    <a href="about.html" class="nav-link">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                    <a href="#contact" class="nav-link">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Top search bar (hidden by default) -->
+            <div class="top-search-bar" id="topSearchBar">
+                <div class="search-container">
+                    <input type="text" id="topSearchInput" placeholder="Search products..." class="search-input">
+                    <button class="search-close-btn" id="searchClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Precision Electronics <span>Solutions</span></h1>
+                <p class="hero-subtitle">Mentora Electric provides professional PCB design, etching, fabrication, and repair services with over 2 years of expertise in the electronics industry.</p>
+                <div class="cta-buttons">
+                    <a href="#products" class="btn btn-primary">
+                        <i class="fas fa-box-open"></i> View Products
+                    </a>
+                    <a href="#contact" class="btn btn-secondary">
+                        <i class="fas fa-phone"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Electronics Services</h2>
+                <p class="section-subtitle">Comprehensive electronic solutions from design to repair</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card" data-service="pcb-design">
+                    <i class="fas fa-draw-polygon service-icon"></i>
+                    <h3 class="service-title">PCB Design</h3>
+                    <p class="service-description">Professional circuit board design services including schematic capture, layout, and signal integrity analysis for your electronic projects.</p>
+                    <a href="#" class="service-link">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="service-card" data-service="etching">
+                    <i class="fas fa-ethernet service-icon"></i>
+                    <h3 class="service-title">Etching Services</h3>
+                    <p class="service-description">High-precision PCB etching with advanced chemical processes for complex circuit patterns and fine-pitch components.</p>
+                    <a href="#" class="service-link">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="service-card" data-service="fabrication">
+                    <i class="fas fa-industry service-icon"></i>
+                    <h3 class="service-title">Fabrication</h3>
+                    <p class="service-description">End-to-end PCB fabrication from prototype to mass production with quality assurance and testing at every stage.</p>
+                    <a href="#" class="service-link">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="service-card" data-service="laptop-repair">
+                    <i class="fas fa-laptop service-icon"></i>
+                    <h3 class="service-title">Laptop Repair</h3>
+                    <p class="service-description">Professional laptop repair services including motherboard-level diagnostics, component replacement, and data recovery.</p>
+                    <a href="#" class="service-link">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="service-card" data-service="mobile-repair">
+                    <i class="fas fa-mobile-alt service-icon"></i>
+                    <h3 class="service-title">Mobile Repair</h3>
+                    <p class="service-description">Expert smartphone and tablet repair with genuine parts, including display, battery, and charging port replacements.</p>
+                    <a href="#" class="service-link">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="section gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Electronics Products</h2>
+                <p class="section-subtitle">Explore our range of electronic components, gadgets, and DIY modules</p>
+            </div>
+
+            <!-- Add sort and search controls -->
+            <div class="gallery-controls">
+                <div class="sort-control">
+                    <button class="sort-btn" id="sortBtn">
+                        <i class="fas fa-sort"></i> Sort By
+                    </button>
+                    <div class="sort-dropdown" id="sortDropdown">
+                        <button class="sort-option" data-sort="name-asc">Name (A to Z)</button>
+                        <button class="sort-option" data-sort="name-desc">Name (Z to A)</button>
+                        <button class="sort-option" data-sort="price-high">Price (Highest to Lowest)</button>
+                        <button class="sort-option" data-sort="price-low">Price (Lowest to Highest)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-nav">
+                <button class="gallery-nav-btn active" data-filter="all">All Products</button>
+                <button class="gallery-nav-btn" data-filter="electronic-components">Electronic Components</button>
+                <button class="gallery-nav-btn" data-filter="electronics-gadgets">Electronics Gadgets</button>
+                <button class="gallery-nav-btn" data-filter="diy-modules">DIY Modules</button>
+                <button class="gallery-nav-btn" data-filter="oraimo-products">Oraimo Products</button>
+                <button class="gallery-nav-btn" data-filter="laptops">Laptops</button>
+                <button class="gallery-nav-btn" data-filter="tools">Tools</button>
+                <button class="gallery-nav-btn" data-filter="new">New Arrivals</button>
+                <button class="gallery-nav-btn" data-filter="featured">Featured</button>
+                <button class="gallery-nav-btn" data-filter="out-of-stock">Out of Stock</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+            </div>
+
+            <div class="gallery-stats">
+                <span id="imageCount">0 products</span>
+            </div>
+
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section id="favorites" class="section gallery-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Your Favorite Products</h2>
+                <p class="section-subtitle">Products you've added to your favorites</p>
+            </div>
+
+            <div class="gallery-stats">
+                <span id="favoritesCount">0 favorite products</span>
+            </div>
+
+            <div class="gallery-grid" id="favoritesGrid">
+                <!-- Favorite products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Ready for Your Electronics Project?</h2>
+            <p class="cta-description">Contact us today for a free consultation and quote. Our team of electronics experts is ready to bring your ideas to life.</p>
+            <a href="#contact" class="btn btn-secondary">
+                <i class="fas fa-envelope"></i> Get In Touch
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Mentora Electronics</h3>
+                    <p>Providing professional electronics services and products with precision and excellence since 2025.</p>
+                    <div class="social-links">
+                     <!--   <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a> -->
+                        <a href="https://x.com/MentoraElectric?t=mju7Tha8NE97V9eofr1Ymw&s=09" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                       <!-- <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a> -->
+                        <a href="https://youtube.com/@mentoraelectric?si=PpTPBpLnRp9KwQwF" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://mentorareviews.vercel.app/index.html" class="social-link" title="View Reviews"><i class="fas fa-comments"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="service-modal-link" data-service="pcb-design">PCB Design</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="etching">Etching Services</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="fabrication">Fabrication</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="laptop-repair">Laptop Repair</a></li>
+                        <li><a href="#" class="service-modal-link" data-service="mobile-repair">Mobile Repair</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Products</h3>
+                    <ul class="footer-links">
+                        <li><a href="#products">Electronic Components</a></li>
+                        <li><a href="#products">Electronics Gadgets</a></li>
+                        <li><a href="#products">DIY Modules</a></li>
+                        <li><a href="#products">Oraimo Products</a></li>
+                        <li><a href="#products">Laptops</a></li>
+                        <li><a href="#products">Featured Products</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Juja - Kiambu, near Jomo Kenyatta University of Agriculture & Technology</li>
+                        <li><i class="fas fa-phone"></i> +254 736 994 238</li>
+                        <li><i class="fas fa-envelope"></i> mentoraelectric@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 8am-6pm, Sat: 9am-2pm</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mentora Electronics. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Detail Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content detail-modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content cart-modal-content">
+            <span class="close-btn" id="closeCartModal">&times;</span>
+            <div class="modal-body">
+                <h2>Your Cart</h2>
+                <div class="cart-items-container" id="cartItems">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div class="cart-total">
+                    <strong>Total: Ksh. <span id="cartTotal">0.00</span></strong>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn btn-primary" id="checkoutBtn">Checkout</button>
+                    <button class="btn btn-secondary" id="closeCartBtn">Continue Shopping</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeProfileModal">&times;</span>
+            <div class="modal-body">
+                <h2>Edit Profile</h2>
+                <form id="profileForm">
+                    <div class="profile-photo-section">
+                        <div class="profile-photo-container">
+                            <img id="profilePhotoPreview" src="" alt="Profile Photo" style="display: none;">
+                            <div id="profilePhotoPlaceholder" class="profile-photo-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="profile-photo-actions">
+                            <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+                            <button type="button" class="btn btn-secondary" id="uploadPhotoBtn">
+                                <i class="fas fa-upload"></i> Upload Photo
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="removePhotoBtn" style="display: none;">
+                                <i class="fas fa-trash"></i> Remove Photo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profileUsername">Username</label>
+                        <input type="text" id="profileUsername" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" name="email" readonly>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" id="cancelProfileBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+<div class="modal" id="checkoutModal">
+    <div class="modal-content checkout-modal-content">
+        <span class="close-btn" id="closeCheckoutModal">&times;</span>
+        <div class="modal-body checkout-modal-body">
+            <h2>Complete Your Order</h2>
+            <p>Please provide your contact information for order confirmation and delivery:</p>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="customerName">Full Name</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone">Phone Number</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">Email Address</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress">Delivery Address</label>
+                    <textarea id="customerAddress" rows="3" required></textarea>
+                </div>
+                <div class="payment-notice">
+                    <p><strong>Payment Information:</strong></p>
+                    <p>• For Juja residents: Payment on delivery</p>
+                    <p>• For other locations: Payment required upfront</p>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Confirm Order</button>
+                    <button type="button" class="btn btn-secondary" id="cancelCheckoutBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
