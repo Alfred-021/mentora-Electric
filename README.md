@@ -12,7 +12,7 @@ Frontend: HTML, CSS
 
 Database: SQLite (default Django DB – can be upgraded)
 
-Styling: Custom CSS (static files)
+Styling: Custom CSS (static files).
 
 Version Control: Git & GitHub
 
