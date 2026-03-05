@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,11 +15,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mentora Electronics | PCB Design & Repair Services</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="../../static/styles/main.css">
-    <!-- Add these scripts in the HEAD section -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Then your other scripts -->
 <script src="auth.js"></script>
@@ -42,11 +40,22 @@
                     </button>
                     <div class="user-actions" id="userActions">
                         <!-- Show when user is not logged in -->
-                        <div class="auth-buttons" id="authButtons">
-                            <a href="auth.html" class="nav-link">
-                                <i class="fas fa-user"></i> Sign In
-                            </a>
-                        </div>
+                        {% if user.is_authenticated %}
+    <div class="user-menu">
+        <span style="margin-right: 10px;">
+            <i class="fas fa-user-circle"></i> {{ user.username }}
+        </span>
+        <a href="{% url 'logout' %}" class="nav-link">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+{% else %}
+    <div class="auth-buttons">
+        <a href="{% url 'auth' %}" class="nav-link">
+            <i class="fas fa-user"></i> Sign In
+        </a>
+    </div>
+{% endif %}
                         <!-- Show when user is logged in -->
                         <div class="user-menu" id="userMenu" style="display: none;">
                             <button class="user-btn" id="userBtn">
@@ -77,7 +86,7 @@
                 </div>
 
                 <nav class="nav">
-                    <a href="#" class="nav-link active">
+                    <a href="{% url 'home' %}" class="nav-link active">
                         <i class="fas fa-home"></i> Home
                     </a>
                     <a href="#services" class="nav-link">
@@ -89,7 +98,7 @@
                     <a href="#favorites" class="nav-link" id="favoritesNavLink" style="display: none;">
                         <i class="fas fa-heart"></i> Favorites
                     </a>
-                    <a href="about.html" class="nav-link">
+                    <a href="{% url 'about' %}" class="nav-link">
                         <i class="fas fa-info-circle"></i> About
                     </a>
                     <a href="#contact" class="nav-link">
@@ -132,7 +141,7 @@
     <section id="services" class="section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Our Electronics Services</h2>
+                <h2 class="section-title">Our Products & Services</h2>
                 <p class="section-subtitle">Comprehensive electronic solutions from design to repair</p>
             </div>
             <div class="services-grid">
@@ -140,15 +149,19 @@
                     <i class="fas fa-draw-polygon service-icon"></i>
                     <h3 class="service-title">PCB Design</h3>
                     <p class="service-description">Professional circuit board design services including schematic capture, layout, and signal integrity analysis for your electronic projects.</p>
-                    <a href="#" class="service-link">
+                    <a href="javascript:void(0);"
+                     class="service-link"
+                     data-service="pcb-design">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                <div class="service-card" data-service="etching">
+                <div class="service-card" data-service="electronic-components">
                     <i class="fas fa-ethernet service-icon"></i>
-                    <h3 class="service-title">Etching Services</h3>
-                    <p class="service-description">High-precision PCB etching with advanced chemical processes for complex circuit patterns and fine-pitch components.</p>
-                    <a href="#" class="service-link">
+                    <h3 class="service-title">Electronic Components</h3>
+                    <p class="service-description">High-quality electronic components including resistors, capacitors, inductors, diodes, and integrated circuits for all your design needs.</p>
+                    <a href="javascript:void(0);" 
+                    class="service-link"
+                    data-service="electronic-components">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -156,7 +169,9 @@
                     <i class="fas fa-industry service-icon"></i>
                     <h3 class="service-title">Fabrication</h3>
                     <p class="service-description">End-to-end PCB fabrication from prototype to mass production with quality assurance and testing at every stage.</p>
-                    <a href="#" class="service-link">
+                    <a href="javascript:void(0);" 
+                    class="service-link"
+                    data-service="fabrication">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -164,7 +179,9 @@
                     <i class="fas fa-laptop service-icon"></i>
                     <h3 class="service-title">Laptop Repair</h3>
                     <p class="service-description">Professional laptop repair services including motherboard-level diagnostics, component replacement, and data recovery.</p>
-                    <a href="#" class="service-link">
+                    <a href="javascript:void(0);" 
+                    class="service-link"
+                    data-service="laptop-repair">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -172,7 +189,9 @@
                     <i class="fas fa-mobile-alt service-icon"></i>
                     <h3 class="service-title">Mobile Repair</h3>
                     <p class="service-description">Expert smartphone and tablet repair with genuine parts, including display, battery, and charging port replacements.</p>
-                    <a href="#" class="service-link">
+                    <a href="javascript:void(0);" 
+                    class="service-link"
+                    data-service="mobile-repair">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -184,7 +203,7 @@
     <section id="products" class="section gallery-section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Our Electronics Products</h2>
+                <h2 class="section-title">Our Products</h2>
                 <p class="section-subtitle">Explore our range of electronic components, gadgets, and DIY modules</p>
             </div>
 
@@ -221,11 +240,27 @@
             </div>
 
             <div class="gallery-stats">
-                <span id="imageCount">0 products</span>
+                <span id="imageCount">{{ products|length }} products</span>
             </div>
 
             <div class="gallery-grid" id="galleryGrid">
-                <!-- Products will be loaded here by JavaScript -->
+                 {% for product in products %}
+        <div class="product-card">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            
+            <h3>{{ product.name }}</h3>
+            
+            <p>{{ product.description|truncatewords:15 }}</p>
+            
+            <p><strong>Ksh. {{ product.price }}</strong></p>
+
+            <button class="btn btn-primary">
+                Add to Cart
+            </button>
+        </div>
+    {% empty %}
+        <p>No products available.</p>
+    {% endfor %}
             </div>
         </div>
     </section>
@@ -426,10 +461,7 @@
 </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
+<!-- <script src="{% static 'js/script.js' %}"></script>
 </body>
 
 </html>

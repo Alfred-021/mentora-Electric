@@ -1,17 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Mentora Electronics</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="../../static/styles/main.css">
-    <!-- Add these scripts in the HEAD section -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 
 <!-- Then your other scripts -->
-<script src="auth.js"></script>
 <script src="script.js"></script>
 </head>
 <body>
@@ -23,13 +21,13 @@
                     <div class="logo-text">Mentora <span>Electric</span></div>
                 </div>
                 <nav class="nav">
-                    <a href="index.html" class="nav-link">
+                    <a href="{% url 'home' %}" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="index.html#products" class="nav-link">
+                    <a href="{% url 'home' %}#products" class="nav-link">
                         <i class="fas fa-box-open"></i> Products
                     </a>
-                    <a href="index.html#services" class="nav-link">
+                    <a href="{% url 'home' %}#services" class="nav-link">
                         <i class="fas fa-cogs"></i> Services
                     </a>
                 </nav>
@@ -40,24 +38,34 @@
     <section class="section auth-section">
         <div class="container">
             <div class="auth-container">
+                {% if messages %}
+    <div class="auth-message">
+        {% for message in messages %}
+            <p class="{% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </p>
+        {% endfor %}
+    </div>
+{% endif %}
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Sign In</button>
                     <button class="auth-tab" data-tab="signup">Sign Up</button>
                 </div>
 
                 <!-- Login Form -->
-                <form id="loginForm" class="auth-form active">
+                <form method="POST" action="{% url 'login' %}" class="auth-form active">
+                    {% csrf_token %}
                     <h2>Welcome Back</h2>
                     <div class="form-group">
-                        <label for="loginIdentifier">Email or Username</label>
-                        <input type="text" id="loginIdentifier" required>
+                        <label>Email or Username</label>
+                        <input type="text" name="username" required>
                     </div>
                     <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" required>
+                        <label>Password</label>
+                        <input type="password" name="password" required>
                     </div>
                     <div class="form-options">
-                        <a href="#" id="forgotPasswordLink" class="forgot-password">Forgot Password?</a>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">
                         <i class="fas fa-sign-in-alt"></i> Sign In
@@ -66,23 +74,24 @@
                 </form>
 
                 <!-- Signup Form -->
-                <form id="signupForm" class="auth-form">
+                <form method="POST" action="{% url 'register' %}" class="auth-form">
+                    {% csrf_token %}
                     <h2>Create Account</h2>
                     <div class="form-group">
-                        <label for="signupUsername">Username</label>
-                        <input type="text" id="signupUsername" required>
+                        <label>Username</label>
+                        <input type="text" name="username" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupEmail">Email</label>
-                        <input type="email" id="signupEmail" required>
+                        <label>Email</label>
+                        <input type="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" required minlength="6">
+                        <label>Password</label>
+                        <input type="password" name="password" required minlength="6">
                     </div>
                     <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" id="confirmPassword" required>
+                        <label>Confirm Password</label>
+                        <input type="password" name="confirm_password" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">
                         <i class="fas fa-user-plus"></i> Create Account
@@ -91,20 +100,6 @@
                 </form>
 
                 <!-- Forgot Password Form -->
-                <form id="forgotPasswordForm" class="auth-form">
-                    <h2>Reset Password</h2>
-                    <div class="form-group">
-                        <label for="resetEmail">Email Address</label>
-                        <input type="email" id="resetEmail" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-envelope"></i> Send Reset Link
-                    </button>
-                    <div class="form-options">
-                        <a href="#" id="backToLoginLink" class="forgot-password">Back to Login</a>
-                    </div>
-                    <div id="forgotPasswordMessage" class="auth-message"></div>
-                </form>
             </div>
         </div>
     </section>
@@ -119,10 +114,10 @@
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="index.html#products">Products</a></li>
-                        <li><a href="index.html#services">Services</a></li>
-                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'home' %}#products">Products</a></li>
+                        <li><a href="{% url 'home' %}#services">Services</a></li>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -139,10 +134,31 @@
             </div>
         </div>
     </footer>
-    
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const tabs = document.querySelectorAll(".auth-tab");
+    const forms = document.querySelectorAll(".auth-form");
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function () {
+            const target = this.getAttribute("data-tab");
+
+            // Remove active from all tabs
+            tabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+
+            // Hide all forms
+            forms.forEach(form => form.classList.remove("active"));
+
+            // Show correct form
+            if (target === "login") {
+                forms[0].classList.add("active");
+            } else {
+                forms[1].classList.add("active");
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+html { 
+    margin: 0;
+    padding: 0;
+    }
 
 :root {
     --primary: #0a84ff;
@@ -23,6 +27,8 @@ body {
     color: var(--light);
     background-color: var(--dark);
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
