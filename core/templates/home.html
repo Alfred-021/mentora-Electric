@@ -18,9 +18,6 @@
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- Then your other scripts -->
-<script src="auth.js"></script>
-<script src="script.js"></script>
 </head>
 
 <body>
@@ -78,10 +75,10 @@
                             </div>
                         </div>
                         <!-- Cart Icon -->
-                        <button class="cart-btn" id="cartBtn">
+                        <a class="cart-btn" href="{% url 'cart' %}" style="text-decoration:none;">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-count" id="cartCount">0</span>
-                        </button>
+                            <span class="cart-count" id="cartCount">{{ cart_count|default:0 }}</span>
+                        </a>
                     </div>
                 </div>
 
@@ -207,56 +204,19 @@
                 <p class="section-subtitle">Explore our range of electronic components, gadgets, and DIY modules</p>
             </div>
 
-            <!-- Add sort and search controls -->
-            <div class="gallery-controls">
-                <div class="sort-control">
-                    <button class="sort-btn" id="sortBtn">
-                        <i class="fas fa-sort"></i> Sort By
-                    </button>
-                    <div class="sort-dropdown" id="sortDropdown">
-                        <button class="sort-option" data-sort="name-asc">Name (A to Z)</button>
-                        <button class="sort-option" data-sort="name-desc">Name (Z to A)</button>
-                        <button class="sort-option" data-sort="price-high">Price (Highest to Lowest)</button>
-                        <button class="sort-option" data-sort="price-low">Price (Lowest to Highest)</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="gallery-nav">
-                <button class="gallery-nav-btn active" data-filter="all">All Products</button>
-                <button class="gallery-nav-btn" data-filter="electronic-components">Electronic Components</button>
-                <button class="gallery-nav-btn" data-filter="electronics-gadgets">Electronics Gadgets</button>
-                <button class="gallery-nav-btn" data-filter="diy-modules">DIY Modules</button>
-                <button class="gallery-nav-btn" data-filter="oraimo-products">Oraimo Products</button>
-                <button class="gallery-nav-btn" data-filter="laptops">Laptops</button>
-                <button class="gallery-nav-btn" data-filter="tools">Tools</button>
-                <button class="gallery-nav-btn" data-filter="new">New Arrivals</button>
-                <button class="gallery-nav-btn" data-filter="featured">Featured</button>
-                <button class="gallery-nav-btn" data-filter="out-of-stock">Out of Stock</button>
-            </div>
-
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
-            </div>
-
-            <div class="gallery-stats">
-                <span id="imageCount">{{ products|length }} products</span>
-            </div>
-
             <div class="gallery-grid" id="galleryGrid">
                  {% for product in products %}
         <div class="product-card">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            
             <h3>{{ product.name }}</h3>
             
             <p>{{ product.description|truncatewords:15 }}</p>
             
             <p><strong>Ksh. {{ product.price }}</strong></p>
 
-            <button class="btn btn-primary">
-                Add to Cart
-            </button>
+            <form method="post" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
         </div>
     {% empty %}
         <p>No products available.</p>
@@ -461,7 +421,7 @@
 </div>
 
     <!-- Scripts -->
-<!-- <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 
 </html>

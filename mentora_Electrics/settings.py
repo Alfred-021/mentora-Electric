@@ -32,9 +32,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'mentora_Electrics.apps.MongoAdminConfig',
+    'mentora_Electrics.apps.MongoAuthConfig',
+    'mentora_Electrics.apps.MongoContentTypesConfig',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -73,15 +73,13 @@ WSGI_APPLICATION = 'mentora_Electrics.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Use MongoDB via django-mongodb-backend.
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mentora_db',
-        'USER': 'mentora_user',
-        'PASSWORD': 'Alfred@2000',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django_mongodb_backend',
+        'NAME': os.getenv('MONGODB_NAME', 'mentora_db'),
+        'HOST': os.getenv('MONGODB_URI', 'mongodb://127.0.0.1:27017/'),
     }
 }
 
@@ -129,7 +127,13 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MIGRATION_MODULES = {
+    'admin': 'mongo_migrations.admin',
+    'auth': 'mongo_migrations.auth',
+    'contenttypes': 'mongo_migrations.contenttypes',
+}
+
+DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

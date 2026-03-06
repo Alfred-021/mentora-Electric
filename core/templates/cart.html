@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Mentora Electronics</title>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip logo-icon"></i>
+                    <div class="logo-text">Mentora <span>Electric</span></div>
+                </div>
+                <nav class="nav">
+                    <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                    <a href="{% url 'home' %}#products" class="nav-link"><i class="fas fa-box-open"></i> Continue Shopping</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Your Cart</h2>
+                <p class="section-subtitle">{{ cart_count }} item{{ cart_count|pluralize }} selected</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
+            {% if items %}
+                <div class="gallery-grid">
+                    {% for item in items %}
+                        <article class="product-card">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            <h3>{{ item.product.name }}</h3>
+                            <form method="post" action="{% url 'update_cart_item' item.product.id %}" style="margin: 0.6rem 0;">
+                                {% csrf_token %}
+                                <label for="qty-{{ item.product.id }}">Qty:</label>
+                                <input id="qty-{{ item.product.id }}" type="number" name="quantity" min="1" value="{{ item.quantity }}" style="width: 90px;">
+                                <button type="submit" class="btn btn-secondary">Update</button>
+                            </form>
+                            <p>Unit: Ksh. {{ item.product.price }}</p>
+                            <p><strong>Line Total: Ksh. {{ item.line_total }}</strong></p>
+                            <form method="post" action="{% url 'remove_cart_item' item.product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary">Remove Item</button>
+                            </form>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <div style="margin-top: 1.5rem; text-align: right;">
+                    <h3>Total: Ksh. {{ total }}</h3>
+                </div>
+            {% else %}
+                <p>Your cart is empty. <a href="{% url 'home' %}#products">Browse products</a>.</p>
+            {% endif %}
+        </div>
+    </section>
+</body>
+</html>

@@ -10,7 +10,7 @@ Backend: Django (Python)
 
 Frontend: HTML, CSS
 
-Database: SQLite (default Django DB – can be upgraded)
+Database: MongoDB (via `django-mongodb-backend`)
 
 Styling: Custom CSS (static files).
 
@@ -52,3 +52,17 @@ Django CSRF protection enabled
 Input validation via Django forms
 
 Planned HTTPS enforcement on deployment
+
+
+Local Setup (MongoDB)
+
+1. Install MongoDB Community Server and start it on `mongodb://127.0.0.1:27017`.
+2. Install Python dependencies:
+	`pip install -r requirements.txt`
+3. (Optional) Set environment variables:
+	`MONGODB_URI=mongodb://127.0.0.1:27017/`
+	`MONGODB_NAME=mentora_db`
+4. Run migrations:
+	`python manage.py migrate`
+5. Start the app:
+	`python manage.py runserver`

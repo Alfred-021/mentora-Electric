@@ -98,7 +98,8 @@ class ProductGallery {
     async init() {
         await this.initializeElements();
         await this.checkAuthState();
-        await this.loadProducts();
+        // Disabled: Products are now rendered server-side by Django
+        // await this.loadProducts();
         this.attachEventListeners();
     }
 
@@ -283,6 +284,12 @@ class ProductGallery {
         
         if (!this.galleryGrid) {
             console.error('Gallery grid element not found!');
+            return;
+        }
+
+        // Don't overwrite Django-rendered products if we haven't loaded any via JavaScript
+        if (this.products.length === 0) {
+            console.log('No JavaScript products loaded, keeping Django-rendered products');
             return;
         }
 
