@@ -22,6 +22,10 @@ urlpatterns = [
    path("", views.home, name="home"),
    path("about/", views.about, name="about"),
    path("auth/", views.auth_page, name="auth"),
+    path("cart/", views.cart_view, name="cart"),
+    path("cart/add/<str:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/update/<str:product_id>/", views.update_cart_item, name="update_cart_item"),
+    path("cart/remove/<str:product_id>/", views.remove_cart_item, name="remove_cart_item"),
 
    path('register/', views.register_user, name='register'),
    path('login/', views.login_user, name='login'),

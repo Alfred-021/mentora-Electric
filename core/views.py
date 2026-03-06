@@ -3,8 +3,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Sum
 
-from core.models import Product
+from core.models import Product, Cart, CartItem
+
+
+def _cart_count(request):
+    if not request.user.is_authenticated:
+        return 0
+    total = CartItem.objects.filter(cart__user=request.user).aggregate(total=Sum('quantity'))['total']
+    return total or 0
 
 
 # ----------------------
@@ -13,11 +21,103 @@ from core.models import Product
 
 def home(request):
     products = Product.objects.all()  # Assuming you have a Product model
-    return render(request, 'home.html', {'products': products})
+    return render(request, 'home.html', {
+        'products': products,
+        'cart_count': _cart_count(request),
+    })
 
 
 def about(request):
     return render(request, 'about.html')
+
+
+def add_to_cart(request, product_id):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Please sign in to add items to cart.')
+        return redirect('auth')
+
+    if request.method != 'POST':
+        return redirect('home')
+
+    product = Product.objects.filter(pk=product_id).first()
+    if not product:
+        messages.error(request, 'Product not found.')
+        return redirect('home')
+
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    if not created:
+        item.quantity += 1
+        item.save(update_fields=['quantity'])
+
+    messages.success(request, f'Added {product.name} to cart.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required(login_url='auth')
+def cart_view(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart_items = CartItem.objects.filter(cart=cart).select_related('product')
+    items = []
+    total = 0
+
+    for item in cart_items:
+        line_total = item.product.price * item.quantity
+        total += line_total
+        items.append({
+            'product': item.product,
+            'quantity': item.quantity,
+            'line_total': line_total,
+        })
+
+    return render(request, 'cart.html', {
+        'items': items,
+        'total': total,
+        'cart_count': _cart_count(request),
+    })
+
+
+@login_required(login_url='auth')
+def update_cart_item(request, product_id):
+    if request.method != 'POST':
+        return redirect('cart')
+
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
+    if not item:
+        messages.error(request, 'Cart item not found.')
+        return redirect('cart')
+
+    try:
+        quantity = int(request.POST.get('quantity', item.quantity))
+    except (TypeError, ValueError):
+        messages.error(request, 'Invalid quantity value.')
+        return redirect('cart')
+
+    if quantity <= 0:
+        item.delete()
+        messages.success(request, 'Item removed from cart.')
+    else:
+        item.quantity = quantity
+        item.save(update_fields=['quantity'])
+        messages.success(request, 'Cart updated.')
+
+    return redirect('cart')
+
+
+@login_required(login_url='auth')
+def remove_cart_item(request, product_id):
+    if request.method != 'POST':
+        return redirect('cart')
+
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    deleted, _ = CartItem.objects.filter(cart=cart, product_id=product_id).delete()
+    if deleted:
+        messages.success(request, 'Item removed from cart.')
+    else:
+        messages.error(request, 'Cart item not found.')
+
+    return redirect('cart')
 
 
 def auth_page(request):
