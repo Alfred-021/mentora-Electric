@@ -64,7 +64,7 @@ def home(request):
             id__in=user_favourites
         ).select_related('category')
 
-    return render(request, 'home.html', {
+    return render(request, 'index.html', {
         'products': products,
         'categories': categories,
         'current_category': category,
