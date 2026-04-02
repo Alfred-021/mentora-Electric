@@ -1442,3 +1442,5 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing ProductGallery...');
     productGallery = new ProductGallery();
 });
+
+

@@ -25,6 +25,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/')
     is_featured = models.BooleanField(default=False)
     is_new = models.BooleanField(default=False)
+    in_stock = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

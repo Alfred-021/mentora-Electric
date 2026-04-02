@@ -3,10 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
-from core.models import Product, Cart, CartItem
-
+from core.models import Product, Cart, CartItem, Category, Favorite
 
 def _cart_count(request):
     if not request.user.is_authenticated:
@@ -20,11 +19,63 @@ def _cart_count(request):
 # ----------------------
 
 def home(request):
-    products = Product.objects.all()  # Assuming you have a Product model
+    products = Product.objects.select_related('category').all()  # ← always defined first
+    categories = Category.objects.all()
+
+    # 🔍 SEARCH
+    query = request.GET.get('q', '').strip()
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    # 🏷 CATEGORY FILTER
+    category = request.GET.get('category', 'all') or 'all'  # ← 'or all' guards against empty string
+    if category == 'featured':
+        products = products.filter(is_featured=True)
+    elif category == 'new':
+        products = products.filter(is_new=True)
+    elif category == 'out-of-stock':
+        products = products.filter(in_stock=False)
+    elif category != 'all':
+        products = products.filter(category__slug=category)
+    # if category == 'all' → no filter, show everything ✓
+
+    # 🔄 SORT
+    sort = request.GET.get('sort', '') or ''  # ← guards against None
+    sort_map = {
+        'name-asc':   'name',
+        'name-desc':  '-name',
+        'price-low':  'price',
+        'price-high': '-price',
+    }
+    if sort in sort_map:
+        products = products.order_by(sort_map[sort])
+
+        # Favourites
+    user_favourites = []
+    favourite_products = []
+    if request.user.is_authenticated:
+        user_favourites = list(
+            Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
+        )
+        favourite_products = Product.objects.filter(
+            id__in=user_favourites
+        ).select_related('category')
+
     return render(request, 'home.html', {
         'products': products,
+        'categories': categories,
+        'current_category': category,
+        'current_sort': sort,
+        'current_query': query,
         'cart_count': _cart_count(request),
+        'user_favourites': user_favourites,           # ← list of IDs for heart toggle
+        'favourite_products': favourite_products,
     })
+
+   
 
 
 def about(request):
@@ -191,6 +242,18 @@ def login_user(request):
 def dashboard(request):
     return render(request, 'dashboard.html')  # Create dashboard.html
 
+@login_required(login_url='auth')
+def toggle_favourite(request, product_id):
+    if request.method == 'POST':
+        product = Product.objects.filter(pk=product_id).first()
+        if product:
+            fav, created = Favorite.objects.get_or_create(
+                user=request.user, product=product
+            )
+            if not created:
+                fav.delete()  # already favourited → remove it
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
 
 # ----------------------
 # LOGOUT
@@ -200,3 +263,5 @@ def logout_user(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return redirect('home')
+
+

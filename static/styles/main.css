@@ -2173,3 +2173,31 @@ img[src=""], img:not([src]) {
     justify-content: center;
     flex-wrap: wrap;
 }
+
+.product-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    font-size: 10px; font-weight: 500;
+    padding: 3px 8px; border-radius: 6px;
+    background: #dbeafe; color: #1d4ed8;
+}
+.product-badge.new  { background: #dcfce7; color: #15803d; }
+.product-badge.out  { background: #fee2e2; color: #dc2626; }
+
+.product-desc-btn {
+    font-size: 11px; color: #888; background: none;
+    border: none; padding: 0; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 2px;
+}
+.product-desc-btn:hover { color: #333; }
+
+.product-fav-btn {
+    width: 38px; height: 38px; border-radius: 8px;
+    border: 1px solid #e5e7eb; background: #fff;
+    font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; transition: border-color 0.15s;
+    flex-shrink: 0;
+}
+.product-fav-btn:hover  { border-color: #f87171; }
+.product-fav-btn.active { background: #fff0f0; border-color: #f87171; }

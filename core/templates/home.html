@@ -204,44 +204,247 @@
                 <p class="section-subtitle">Explore our range of electronic components, gadgets, and DIY modules</p>
             </div>
 
-            <div class="gallery-grid" id="galleryGrid">
-                 {% for product in products %}
-        <div class="product-card">
-            <h3>{{ product.name }}</h3>
-            
-            <p>{{ product.description|truncatewords:15 }}</p>
-            
-            <p><strong>Ksh. {{ product.price }}</strong></p>
+             <!-- Add sort and search controls -->
+           <form method="GET" id="filterForm">
 
-            <form method="post" action="{% url 'add_to_cart' product.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Add to Cart</button>
-            </form>
-        </div>
-    {% empty %}
-        <p>No products available.</p>
-    {% endfor %}
+    <!-- SORT -->
+    <div class="gallery-controls">
+        <div class="sort-control">
+            <button type="button" class="sort-btn" id="sortBtn">
+                <i class="fas fa-sort"></i> Sort By
+            </button>
+
+            <div class="sort-dropdown" id="sortDropdown">
+                <button type="button" class="sort-option" data-sort="name-asc">Name (A to Z)</button>
+                <button type="button" class="sort-option" data-sort="name-desc">Name (Z to A)</button>
+                <button type="button" class="sort-option" data-sort="price-high">Price (Highest to Lowest)</button>
+                <button type="button" class="sort-option" data-sort="price-low">Price (Lowest to Highest)</button>
             </div>
         </div>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="gallery-nav">
+        <button type="button" class="gallery-nav-btn {% if current_category == 'all' %}active{% endif %}" 
+            data-filter="all">All Products</button>
+
+    {% for cat in categories %}
+    <button type="button" 
+            class="gallery-nav-btn {% if current_category == cat.slug %}active{% endif %}" 
+            data-filter="{{ cat.slug }}">{{ cat.name }}</button>
+    {% endfor %}
+
+    <!-- Special filters -->
+    <button type="button" class="gallery-nav-btn {% if current_category == 'new' %}active{% endif %}" 
+            data-filter="new">New Arrivals</button>
+    <button type="button" class="gallery-nav-btn {% if current_category == 'featured' %}active{% endif %}" 
+            data-filter="featured">Featured</button>
+    <button type="button" class="gallery-nav-btn {% if current_category == 'out-of-stock' %}active{% endif %}" 
+            data-filter="out-of-stock">Out of Stock</button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <input type="text" name="q" id="searchInput" placeholder="Search products..." class="search-input" value="{{ request.GET.q }}">
+    </div>
+
+    <!-- HIDDEN INPUTS (IMPORTANT) -->
+    <input type="hidden" name="category" id="categoryInput" value="{{ request.GET.category }}">
+    <input type="hidden" name="sort" id="sortInput" value="{{ request.GET.sort }}">
+
+</form>
+
+           
+
+
+             <div class="gallery-grid" id="galleryGrid">
+            {% for product in products %}
+            <div class="product-card">
+
+                <div style="position:relative;">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                         style="width:100%; height:200px; object-fit:cover; display:block;">
+                    {% if not product.in_stock %}
+                        <span class="product-badge out">Out of stock</span>
+                    {% elif product.is_new %}
+                        <span class="product-badge new">New</span>
+                    {% elif product.is_featured %}
+                        <span class="product-badge">Featured</span>
+                    {% endif %}
+                </div>
+
+                <div style="padding:12px;">
+                    <p style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+                              color:#888; margin-bottom:4px;">{{ product.category.name }}</p>
+                    <h3 style="margin:0 0 6px; font-size:15px;">{{ product.name }}</h3>
+                    <p style="font-size:13px; color:#666; line-height:1.5; margin-bottom:6px;">
+                        {{ product.description|truncatewords:12 }}
+                    </p>
+                    <button class="product-desc-btn"
+                        onclick="openProductModal(
+                            '{{ product.image.url }}',
+                            '{{ product.category.name }}',
+                            `{{ product.name|escapejs }}`,
+                            `{{ product.description|escapejs }}`,
+                            '{{ product.price }}',
+                            '{{ product.in_stock|lower }}',
+                            '{{ product.id }}'
+                        )">View full description ›
+                    </button>
+                </div>
+
+                <div style="padding:0 12px 8px; display:flex; align-items:center; justify-content:space-between;">
+                    <strong>Ksh. {{ product.price }}</strong>
+                    <span style="font-size:11px; color: {% if product.in_stock %}color: #22c55e{% else %}color: #ef4444{% endif %};">
+                        {% if product.in_stock %}● In stock{% else %}● Out of stock{% endif %}
+                    </span>
+                </div>
+
+                <div style="padding:0 12px 14px; display:flex; gap:8px;">
+                    {% if product.in_stock %}
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" style="flex:1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="width:100%; font-size:13px;">
+                            🛒 Add to Cart
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-primary" disabled
+                            style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+                        Unavailable
+                    </button>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'toggle_favourite' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="product-fav-btn {% if product.id in user_favourites %}active{% endif %}"
+                                title="{% if product.id in user_favourites %}Remove from favourites{% else %}Add to favourites{% endif %}">
+                            {% if product.id in user_favourites %}❤️{% else %}🤍{% endif %}
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'auth' %}" class="product-fav-btn" title="Sign in to save favourites">🤍</a>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% empty %}
+                <p>No products available.</p>
+            {% endfor %}
+        </div>
+    </div>
     </section>
+
+    <!-- PRODUCT DESCRIPTION MODAL -->
+<div id="productDescModal" 
+     style="display:none; position:fixed; inset:0; z-index:9999;
+            background:rgba(8, 8, 8, 0.65); align-items:center; justify-content:center; padding:1rem;"
+     onclick="closeProductModal(event)">
+    <div style="background:#0b0b13; border-radius:12px; max-width:500px; width:100%; overflow:hidden;">
+        <div style="position:relative;">
+            <img id="pm-img" src="" alt="" style="width:100%; height:220px; object-fit:cover; display:block;">
+            <button onclick="document.getElementById('productDescModal').style.display='none'"
+                    style="position:absolute; top:10px; right:10px; width:30px; height:30px;
+                           border-radius:50%; border:none; background:rgba(255,255,255,0.9);
+                           font-size:16px; cursor:pointer; line-height:1;">✕</button>
+        </div>
+        <div style="padding:20px 24px;">
+            <p id="pm-cat" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#888; margin-bottom:6px;"></p>
+            <h2 id="pm-name" style="font-size:20px; font-weight:600; margin:0 0 12px;"></h2>
+            <p id="pm-desc" style="font-size:14px; color:#555; line-height:1.75; 
+                                   border-top:1px solid #eee; padding-top:12px; margin:0;"></p>
+        </div>
+        <div style="padding:14px 24px 20px; border-top:1px solid #eee; 
+                    display:flex; align-items:center; justify-content:space-between;">
+            <strong id="pm-price" style="font-size:20px;"></strong>
+            <div style="display:flex; gap:8px;" id="pm-actions"></div>
+        </div>
+    </div>
+</div>
 
     <!-- Favorites Section -->
-    <section id="favorites" class="section gallery-section" style="display: none;">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Your Favorite Products</h2>
-                <p class="section-subtitle">Products you've added to your favorites</p>
-            </div>
-
-            <div class="gallery-stats">
-                <span id="favoritesCount">0 favorite products</span>
-            </div>
-
-            <div class="gallery-grid" id="favoritesGrid">
-                <!-- Favorite products will be loaded here by JavaScript -->
-            </div>
+    <section id="favorites" class="section gallery-section"
+         {% if not user.is_authenticated %}style="display:none;"{% endif %}>
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Your Favourite Products</h2>
+            <p class="section-subtitle">Products you've saved to your favourites</p>
         </div>
-    </section>
+
+        <div class="gallery-stats">
+            <span id="favoritesCount">{{ favourite_products|length }} favourite product{{ favourite_products|length|pluralize }}</span>
+        </div>
+
+        <div class="gallery-grid" id="favoritesGrid">
+            {% for product in favourite_products %}
+            <div class="product-card">
+
+                <div style="position:relative;">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                         style="width:100%; height:200px; object-fit:cover; display:block;">
+                </div>
+
+                <div style="padding:12px;">
+                    <p style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+                              color:#888; margin-bottom:4px;">{{ product.category.name }}</p>
+                    <h3 style="margin:0 0 6px; font-size:15px;">{{ product.name }}</h3>
+                    <p style="font-size:13px; color:#666; line-height:1.5; margin-bottom:6px;">
+                        {{ product.description|truncatewords:12 }}
+                    </p>
+                    <button class="product-desc-btn"
+                        onclick="openProductModal(
+                            '{{ product.image.url }}',
+                            '{{ product.category.name }}',
+                            `{{ product.name|escapejs }}`,
+                            `{{ product.description|escapejs }}`,
+                            '{{ product.price }}',
+                            {{ product.in_stock|yesno:'true,false' }},
+                            '{{ product.id }}'
+                        )">View full description ›
+                    </button>
+                </div>
+
+                <div style="padding:0 12px 8px; display:flex; align-items:center; justify-content:space-between;">
+                    <strong>Ksh. {{ product.price }}</strong>
+                    <span style="font-size:11px;{% if product.in_stock %}color: #22c55e{% else %}color: #ef4444{% endif %}">
+                        {% if product.in_stock %}● In stock{% else %}● Out of stock{% endif %}
+                    </span>
+                </div>
+
+                <div style="padding:0 12px 14px; display:flex; gap:8px;">
+                    {% if product.in_stock %}
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" style="flex:1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="width:100%; font-size:13px;">
+                            🛒 Add to Cart
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-primary" disabled
+                            style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+                        Unavailable
+                    </button>
+                    {% endif %}
+
+                    <!-- Always active (❤️) since these are already favourites -->
+                    <form method="post" action="{% url 'toggle_favourite' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="product-fav-btn active" title="Remove from favourites">
+                            ❤️
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            {% empty %}
+                <p style="color:#888;">You haven't added any favourites yet. 
+                   Browse the products above and click 🤍 to save them here.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 
     <!-- CTA Section -->
     <section class="cta-section">
@@ -422,6 +625,102 @@
 
     <!-- Scripts -->
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+const form = document.getElementById("filterForm");
+
+// =====================
+// CATEGORY
+// =====================
+document.querySelectorAll(".gallery-nav-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
+        document.querySelectorAll(".gallery-nav-btn").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+
+        document.getElementById("categoryInput").value = this.dataset.filter;
+        form.submit();
+    });
+});
+
+// =====================
+// SORT
+// =====================
+document.querySelectorAll(".sort-option").forEach(btn => {
+    btn.addEventListener("click", function () {
+        document.getElementById("sortInput").value = this.dataset.sort;
+        form.submit();
+    });
+});
+
+// =====================
+// SEARCH (DEBOUNCED)
+// =====================
+let searchTimer;
+
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(() => {
+        form.submit();
+    }, 500);
+});
+
+// =====================
+// RESTORE STATE
+// =====================
+const params = new URLSearchParams(window.location.search);
+
+// restore category + active button
+const category = params.get("category");
+if (category) {
+    document.getElementById("categoryInput").value = category;
+
+    document.querySelectorAll(".gallery-nav-btn").forEach(btn => {
+        if (btn.dataset.filter === category) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+}
+
+// restore sort
+const sort = params.get("sort");
+if (sort) {
+    document.getElementById("sortInput").value = sort;
+}
+</script>
+<script>
+function openProductModal(img, cat, name, desc, price, inStock, productId) {
+    document.getElementById('pm-img').src   = img;
+    document.getElementById('pm-cat').textContent   = cat;
+    document.getElementById('pm-name').textContent  = name;
+    document.getElementById('pm-desc').textContent  = desc;
+    document.getElementById('pm-price').textContent = 'Ksh. ' + parseFloat(price).toLocaleString();
+
+    // Cart + fav buttons inside modal
+    document.getElementById('pm-actions').innerHTML = `
+        ${inStock
+            ? `<form method="post" action="/cart/add/${productId}/">
+                   <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
+                   <button type="submit" class="btn btn-primary" style="font-size:13px;">🛒 Add to Cart</button>
+               </form>`
+            : `<button class="btn btn-primary" disabled style="opacity:0.4; font-size:13px;">Unavailable</button>`
+        }`;
+
+    document.getElementById('productDescModal').style.display = 'flex';
+}
+
+function closeProductModal(e) {
+    if (e.target === document.getElementById('productDescModal'))
+        document.getElementById('productDescModal').style.display = 'none';
+}
+
+// Helper to get CSRF token from cookie
+function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+</script>
 </body>
 
 </html>

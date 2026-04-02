@@ -137,3 +137,5 @@ DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+print("MONGODB URI:", os.getenv('MONGODB_URI'))
