@@ -281,16 +281,16 @@
                         {{ product.description|truncatewords:12 }}
                     </p>
                     <button class="product-desc-btn"
-                        onclick="openProductModal(
-                            '{{ product.image.url }}',
-                            '{{ product.category.name }}',
-                            `{{ product.name|escapejs }}`,
-                            `{{ product.description|escapejs }}`,
-                            '{{ product.price }}',
-                            '{{ product.in_stock|lower }}',
-                            '{{ product.id }}'
-                        )">View full description ›
-                    </button>
+        data-img="{{ product.image.url }}"
+        data-cat="{{ product.category.name }}"
+        data-name="{{ product.name|escapejs }}"
+        data-desc="{{ product.description|escapejs }}"
+        data-price="{{ product.price }}"
+        data-stock="{{ product.in_stock|yesno:'true,false' }}"
+        data-id="{{ product.id }}"
+        onclick="openProductModal(this)">
+    View full description ›
+</button>
                 </div>
 
                 <div style="padding:0 12px 8px; display:flex; align-items:center; justify-content:space-between;">
@@ -302,31 +302,27 @@
 
                 <div style="padding:0 12px 14px; display:flex; gap:8px;">
                     {% if product.in_stock %}
-                    <form method="post" action="{% url 'add_to_cart' product.id %}" style="flex:1;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" style="width:100%; font-size:13px;">
-                            🛒 Add to Cart
-                        </button>
-                    </form>
-                    {% else %}
-                    <button class="btn btn-primary" disabled
-                            style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
-                        Unavailable
-                    </button>
-                    {% endif %}
+<button class="btn btn-primary"
+        style="flex:1; font-size:13px;"
+        onclick="addToCart('{{ product.id }}', this)">
+    🛒 Add to Cart
+</button>
+{% else %}
+<button class="btn btn-primary" disabled
+        style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+    Unavailable
+</button>
+{% endif %}
 
                     {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'toggle_favourite' product.id %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="product-fav-btn {% if product.id in user_favourites %}active{% endif %}"
-                                title="{% if product.id in user_favourites %}Remove from favourites{% else %}Add to favourites{% endif %}">
-                            {% if product.id in user_favourites %}❤️{% else %}🤍{% endif %}
-                        </button>
-                    </form>
-                    {% else %}
-                    <a href="{% url 'auth' %}" class="product-fav-btn" title="Sign in to save favourites">🤍</a>
-                    {% endif %}
+<button class="product-fav-btn {% if product.id in user_favourites %}active{% endif %}"
+        title="{% if product.id in user_favourites %}Remove from favourites{% else %}Add to favourites{% endif %}"
+        onclick="toggleFav(this, '{{ product.id }}')">
+    {% if product.id in user_favourites %}❤️{% else %}🤍{% endif %}
+</button>
+{% else %}
+<a href="{% url 'auth' %}" class="product-fav-btn" title="Sign in to save favourites">🤍</a>
+{% endif %}
                 </div>
 
             </div>
@@ -379,8 +375,9 @@
 
         <div class="gallery-grid" id="favoritesGrid">
             {% for product in favourite_products %}
-            <div class="product-card">
+            <div class="product-card" data-product-id="{{ product.id}}">
 
+                
                 <div style="position:relative;">
                     <img src="{{ product.image.url }}" alt="{{ product.name }}"
                          style="width:100%; height:200px; object-fit:cover; display:block;">
@@ -415,25 +412,24 @@
 
                 <div style="padding:0 12px 14px; display:flex; gap:8px;">
                     {% if product.in_stock %}
-                    <form method="post" action="{% url 'add_to_cart' product.id %}" style="flex:1;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" style="width:100%; font-size:13px;">
-                            🛒 Add to Cart
-                        </button>
-                    </form>
-                    {% else %}
-                    <button class="btn btn-primary" disabled
-                            style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
-                        Unavailable
-                    </button>
-                    {% endif %}
+<button class="btn btn-primary"
+        style="flex:1; font-size:13px;"
+        onclick="addToCart('{{ product.id }}', this)">
+    🛒 Add to Cart
+</button>
+{% else %}
+<button class="btn btn-primary" disabled
+        style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+    Unavailable
+</button>
+{% endif %}
 
                     <!-- Always active (❤️) since these are already favourites -->
-                    <form method="post" action="{% url 'toggle_favourite' product.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="product-fav-btn active" title="Remove from favourites">
-                            ❤️
-                        </button>
+                   <button class="product-fav-btn active"
+        title="Remove from favourites"
+        onclick="toggleFav(this, '{{ product.id }}')">
+    ❤️
+</button>
                     </form>
                 </div>
 
@@ -623,89 +619,344 @@
     </div>
 </div>
 
-    <!-- Scripts -->
-    <script src="{% static 'js/script.js' %}"></script>
-    <script>
-const form = document.getElementById("filterForm");
-
-// =====================
-// CATEGORY
-// =====================
-document.querySelectorAll(".gallery-nav-btn").forEach(btn => {
-    btn.addEventListener("click", function () {
-        document.querySelectorAll(".gallery-nav-btn").forEach(b => b.classList.remove("active"));
-        this.classList.add("active");
-
-        document.getElementById("categoryInput").value = this.dataset.filter;
-        form.submit();
-    });
-});
-
-// =====================
-// SORT
-// =====================
-document.querySelectorAll(".sort-option").forEach(btn => {
-    btn.addEventListener("click", function () {
-        document.getElementById("sortInput").value = this.dataset.sort;
-        form.submit();
-    });
-});
-
-// =====================
-// SEARCH (DEBOUNCED)
-// =====================
-let searchTimer;
-
-document.getElementById("searchInput").addEventListener("keyup", function () {
-    clearTimeout(searchTimer);
-
-    searchTimer = setTimeout(() => {
-        form.submit();
-    }, 500);
-});
-
-// =====================
-// RESTORE STATE
-// =====================
-const params = new URLSearchParams(window.location.search);
-
-// restore category + active button
-const category = params.get("category");
-if (category) {
-    document.getElementById("categoryInput").value = category;
-
-    document.querySelectorAll(".gallery-nav-btn").forEach(btn => {
-        if (btn.dataset.filter === category) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
-    });
-}
-
-// restore sort
-const sort = params.get("sort");
-if (sort) {
-    document.getElementById("sortInput").value = sort;
-}
-</script>
+   <!-- Scripts -->
+<script src="{% static 'js/script.js' %}"></script>
 <script>
-function openProductModal(img, cat, name, desc, price, inStock, productId) {
-    document.getElementById('pm-img').src   = img;
-    document.getElementById('pm-cat').textContent   = cat;
-    document.getElementById('pm-name').textContent  = name;
-    document.getElementById('pm-desc').textContent  = desc;
-    document.getElementById('pm-price').textContent = 'Ksh. ' + parseFloat(price).toLocaleString();
+// ── State ─────────────────────────────────────────────────────
+let currentCategory = "{{ current_category|default:'all' }}";
+let currentSort     = "{{ current_sort|default:'' }}";
+let currentQuery    = "{{ current_query|default:'' }}";
+let userFavourites  = [{% for id in user_favourites %}"{{ id }}",{% endfor %}];
+const isAuth        = {{ user.is_authenticated|yesno:'true,false' }};
+const authUrl       = "{% url 'auth' %}";
 
-    // Cart + fav buttons inside modal
-    document.getElementById('pm-actions').innerHTML = `
-        ${inStock
-            ? `<form method="post" action="/cart/add/${productId}/">
-                   <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
-                   <button type="submit" class="btn btn-primary" style="font-size:13px;">🛒 Add to Cart</button>
-               </form>`
-            : `<button class="btn btn-primary" disabled style="opacity:0.4; font-size:13px;">Unavailable</button>`
-        }`;
+// ── Fetch & render products ────────────────────────────────────
+function fetchProducts() {
+    const params = new URLSearchParams({
+        category: currentCategory,
+        sort:     currentSort,
+        q:        currentQuery,
+    });
+
+    const grid = document.getElementById('galleryGrid');
+    grid.style.opacity = '0.4';
+
+    fetch(`/products/json/?${params}`)
+        .then(r => r.json())
+        .then(data => {
+            renderProducts(data.products);
+            grid.style.opacity = '1';
+        })
+        .catch(err => {
+            console.error('Fetch error:', err);
+            grid.style.opacity = '1';
+        });
+}
+
+function badgeHTML(p) {
+    if (!p.in_stock)   return `<span class="product-badge out">Out of stock</span>`;
+    if (p.is_new)      return `<span class="product-badge new">New</span>`;
+    if (p.is_featured) return `<span class="product-badge">Featured</span>`;
+    return '';
+}
+
+function renderProducts(products) {
+    const grid = document.getElementById('galleryGrid');
+
+    if (!products.length) {
+        grid.innerHTML = `<p style="color:#888; padding:2rem 0;">No products found.</p>`;
+        return;
+    }
+
+    grid.innerHTML = products.map(p => {
+        const isFav    = userFavourites.includes(p.id);
+        const favClass = isFav ? 'active' : '';
+        const favIcon  = isFav ? '❤️' : '🤍';
+        const favTitle = isFav ? 'Remove from favourites' : 'Add to favourites';
+
+        return `
+        <div class="product-card">
+            <div style="position:relative;">
+                <img src="${p.image}" alt="${escapeHTML(p.name)}"
+                     style="width:100%; height:200px; object-fit:cover; display:block;">
+                ${badgeHTML(p)}
+            </div>
+            <div style="padding:12px;">
+                <p style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+                          color:#888; margin-bottom:4px;">${escapeHTML(p.category)}</p>
+                <h3 style="margin:0 0 6px; font-size:15px;">${escapeHTML(p.name)}</h3>
+                <p style="font-size:13px; color:#666; line-height:1.5; margin-bottom:6px;">
+                    ${escapeHTML(p.description.split(' ').slice(0, 12).join(' '))}...
+                </p>
+                <button class="product-desc-btn"
+                        data-img="${p.image}"
+                        data-cat="${escapeHTML(p.category)}"
+                        data-name="${escapeHTML(p.name)}"
+                        data-desc="${escapeHTML(p.description)}"
+                        data-price="${p.price}"
+                        data-stock="${p.in_stock}"
+                        data-id="${p.id}"
+                        onclick="openProductModal(this)">
+                    View full description ›
+                </button>
+            </div>
+            <div style="padding:0 12px 8px; display:flex; align-items:center; justify-content:space-between;">
+                <strong>Ksh. ${parseFloat(p.price).toLocaleString()}</strong>
+                <span style="font-size:11px; color:${p.in_stock ? '#22c55e' : '#ef4444'};">
+                    ${p.in_stock ? '● In stock' : '● Out of stock'}
+                </span>
+            </div>
+            <div style="padding:0 12px 14px; display:flex; gap:8px;">
+                ${p.in_stock
+                    ? `<button class="btn btn-primary"
+                               style="flex:1; font-size:13px;"
+                               onclick="addToCart('${p.id}', this)">
+                           🛒 Add to Cart
+                       </button>`
+                    : `<button class="btn btn-primary" disabled
+                               style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+                           Unavailable
+                       </button>`
+                }
+                ${isAuth
+                    ? `<button class="product-fav-btn ${favClass}"
+                               title="${favTitle}"
+                               onclick="toggleFav(this, '${p.id}')">
+                           ${favIcon}
+                       </button>`
+                    : `<a href="${authUrl}" class="product-fav-btn" title="Sign in to save favourites">🤍</a>`
+                }
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── Category buttons ───────────────────────────────────────────
+document.querySelectorAll('.gallery-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.gallery-nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.dataset.filter;
+        fetchProducts();
+    });
+});
+
+// ── Restore active category button on load ─────────────────────
+document.querySelectorAll('.gallery-nav-btn').forEach(btn => {
+    if (btn.dataset.filter === currentCategory) {
+        btn.classList.add('active');
+    }
+});
+
+// ── Sort buttons ───────────────────────────────────────────────
+const sortBtn      = document.getElementById('sortBtn');
+const sortDropdown = document.getElementById('sortDropdown');
+
+sortBtn.addEventListener('click', () => sortDropdown.classList.toggle('visible'));
+
+document.querySelectorAll('.sort-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentSort = btn.dataset.sort;
+        sortDropdown.classList.remove('visible');
+        sortBtn.innerHTML = `<i class="fas fa-sort"></i> ${btn.textContent.trim()}`;
+        fetchProducts();
+    });
+});
+
+document.addEventListener('click', e => {
+    if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target))
+        sortDropdown.classList.remove('visible');
+});
+
+// ── Search (debounced) ─────────────────────────────────────────
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        currentQuery = e.target.value.trim();
+        fetchProducts();
+    }, 400);
+});
+
+// ── Add to Cart (AJAX) ─────────────────────────────────────────
+function addToCart(productId, btn) {
+    if (!isAuth) {
+        window.location.href = authUrl;
+        return;
+    }
+
+    const original = btn.innerHTML;
+    btn.disabled   = true;
+    btn.innerHTML  = 'Adding...';
+
+    fetch(`/cart/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken':      getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            const cartCountEl = document.getElementById('cartCount');
+            if (cartCountEl) cartCountEl.textContent = data.cart_count;
+            btn.innerHTML = '✓ Added!';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.disabled  = false;
+            }, 1500);
+        } else {
+            btn.innerHTML = original;
+            btn.disabled  = false;
+            alert(data.message || 'Something went wrong.');
+        }
+    })
+    .catch(() => {
+        btn.innerHTML = original;
+        btn.disabled  = false;
+        alert('Network error. Please try again.');
+    });
+}
+
+// ── Toggle Favourite (AJAX) ────────────────────────────────────
+function toggleFav(btn, productId) {
+    if (!isAuth) {
+        window.location.href = authUrl;
+        return;
+    }
+
+    fetch(`/favourites/toggle/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken':      getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(r => r.json())  
+    .then(data => {
+        if (data.status === 'ok') {
+            const isFav = userFavourites.includes(productId);
+
+            if (isFav) {
+                // ── REMOVE from favourites ──
+                userFavourites = userFavourites.filter(id => id !== productId);
+                btn.innerHTML  = '🤍';
+                btn.classList.remove('active');
+                btn.title = 'Add to favourites';
+
+                // Remove card from favourites grid
+                const favCard = document.querySelector(`#favoritesGrid [data-product-id="${productId}"]`);
+                if (favCard) favCard.remove();
+
+            } else {
+                // ── ADD to favourites ──
+                userFavourites.push(productId);
+                btn.innerHTML = '❤️';
+                btn.classList.add('active');
+                btn.title = 'Remove from favourites';
+
+                // Add card to favourites grid
+                addToFavouritesGrid(data.product);
+            }
+
+            // Update favourites count
+            updateFavCount();
+        }
+    })
+    .catch(() => alert('Network error. Please try again.'));
+}
+
+function addToFavouritesGrid(p) {
+    const grid = document.getElementById('favoritesGrid');
+
+    // Remove the empty message if present
+    const emptyMsg = grid.querySelector('p');
+    if (emptyMsg) emptyMsg.remove();
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.dataset.productId = p.id;
+    card.innerHTML = `
+        <div style="position:relative;">
+            <img src="${p.image}" alt="${escapeHTML(p.name)}"
+                 style="width:100%; height:200px; object-fit:cover; display:block;">
+        </div>
+        <div style="padding:12px;">
+            <p style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+                      color:#888; margin-bottom:4px;">${escapeHTML(p.category)}</p>
+            <h3 style="margin:0 0 6px; font-size:15px;">${escapeHTML(p.name)}</h3>
+            <p style="font-size:13px; color:#666; line-height:1.5; margin-bottom:6px;">
+                ${escapeHTML(p.description.split(' ').slice(0, 12).join(' '))}...
+            </p>
+            <button class="product-desc-btn"
+                    data-img="${p.image}"
+                    data-cat="${escapeHTML(p.category)}"
+                    data-name="${escapeHTML(p.name)}"
+                    data-desc="${escapeHTML(p.description)}"
+                    data-price="${p.price}"
+                    data-stock="${p.in_stock}"
+                    data-id="${p.id}"
+                    onclick="openProductModal(this)">
+                View full description ›
+            </button>
+        </div>
+        <div style="padding:0 12px 8px; display:flex; align-items:center; justify-content:space-between;">
+            <strong>Ksh. ${parseFloat(p.price).toLocaleString()}</strong>
+            <span style="font-size:11px; color:${p.in_stock ? '#22c55e' : '#ef4444'};">
+                ${p.in_stock ? '● In stock' : '● Out of stock'}
+            </span>
+        </div>
+        <div style="padding:0 12px 14px; display:flex; gap:8px;">
+            ${p.in_stock
+                ? `<button class="btn btn-primary"
+                           style="flex:1; font-size:13px;"
+                           onclick="addToCart('${p.id}', this)">
+                       🛒 Add to Cart
+                   </button>`
+                : `<button class="btn btn-primary" disabled
+                           style="flex:1; opacity:0.4; cursor:not-allowed; font-size:13px;">
+                       Unavailable
+                   </button>`
+            }
+            <button class="product-fav-btn active"
+                    title="Remove from favourites"
+                    data-product-id="${p.id}"
+                    onclick="toggleFav(this, '${p.id}')">
+                ❤️
+            </button>
+        </div>`;
+
+    grid.appendChild(card);
+}
+
+function updateFavCount() {
+    const countEl = document.getElementById('favoritesCount');
+    if (countEl) {
+        const count = userFavourites.length;
+        countEl.textContent = `${count} favourite product${count !== 1 ? 's' : ''}`;
+    }
+}
+// ── Modal ──────────────────────────────────────────────────────
+function openProductModal(btn) {
+    const inStock = btn.dataset.stock === 'true';
+    const id      = btn.dataset.id;
+
+    document.getElementById('pm-img').src           = btn.dataset.img;
+    document.getElementById('pm-cat').textContent   = btn.dataset.cat;
+    document.getElementById('pm-name').textContent  = btn.dataset.name;
+    document.getElementById('pm-desc').textContent  = btn.dataset.desc;
+    document.getElementById('pm-price').textContent = 'Ksh. ' + parseFloat(btn.dataset.price).toLocaleString();
+
+    document.getElementById('pm-actions').innerHTML = inStock
+        ? `<button class="btn btn-primary" style="font-size:13px;"
+                   onclick="addToCart('${id}', this)">
+               🛒 Add to Cart
+           </button>`
+        : `<button class="btn btn-primary" disabled
+               style="opacity:0.4; cursor:not-allowed; font-size:13px;">
+               Unavailable
+           </button>`;
 
     document.getElementById('productDescModal').style.display = 'flex';
 }
@@ -715,10 +966,19 @@ function closeProductModal(e) {
         document.getElementById('productDescModal').style.display = 'none';
 }
 
-// Helper to get CSRF token from cookie
+// ── Helpers ────────────────────────────────────────────────────
 function getCookie(name) {
     const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
     return v ? v[2] : null;
+}
+
+function escapeHTML(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 </script>
 </body>

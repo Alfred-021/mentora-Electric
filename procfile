@@ -1,0 +1,1 @@
+web: gunicorn mentora_Electrics.wsgi --log-file -

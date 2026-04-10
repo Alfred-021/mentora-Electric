@@ -84,6 +84,8 @@ def about(request):
 
 def add_to_cart(request, product_id):
     if not request.user.is_authenticated:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'Please sign in to add items to cart.'}, status=401)
         messages.error(request, 'Please sign in to add items to cart.')
         return redirect('auth')
 
@@ -92,7 +94,8 @@ def add_to_cart(request, product_id):
 
     product = Product.objects.filter(pk=product_id).first()
     if not product:
-        messages.error(request, 'Product not found.')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'Product not found.'}, status=404)
         return redirect('home')
 
     cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -101,9 +104,19 @@ def add_to_cart(request, product_id):
         item.quantity += 1
         item.save(update_fields=['quantity'])
 
+    # get updated cart count
+    cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(
+        total=Sum('quantity'))['total'] or 0
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'ok',
+            'message': f'Added {product.name} to cart.',
+            'cart_count': cart_count,
+        })
+
     messages.success(request, f'Added {product.name} to cart.')
     return redirect(request.META.get('HTTP_REFERER', 'home'))
-
 
 @login_required(login_url='auth')
 def cart_view(request):
@@ -245,13 +258,28 @@ def dashboard(request):
 @login_required(login_url='auth')
 def toggle_favourite(request, product_id):
     if request.method == 'POST':
-        product = Product.objects.filter(pk=product_id).first()
+        product = Product.objects.filter(pk=product_id).select_related('category').first()
         if product:
             fav, created = Favorite.objects.get_or_create(
                 user=request.user, product=product
             )
             if not created:
-                fav.delete()  # already favourited → remove it
+                fav.delete()
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'ok',
+                    'product': {
+                        'id':          str(product.id),
+                        'name':        product.name,
+                        'category':    product.category.name,
+                        'description': product.description,
+                        'price':       str(product.price),
+                        'image':       product.image.url,
+                        'in_stock':    product.in_stock,
+                    }
+                })
+
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
@@ -263,5 +291,57 @@ def logout_user(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return redirect('home')
+
+
+from django.http import JsonResponse
+
+def products_json(request):
+    products = Product.objects.select_related('category').all()
+
+    # 🔍 SEARCH
+    query = request.GET.get('q', '').strip()
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    # 🏷 CATEGORY
+    category = request.GET.get('category', 'all') or 'all'
+    if category == 'featured':
+        products = products.filter(is_featured=True)
+    elif category == 'new':
+        products = products.filter(is_new=True)
+    elif category == 'out-of-stock':
+        products = products.filter(in_stock=False)
+    elif category != 'all':
+        products = products.filter(category__slug=category)
+
+    # 🔄 SORT
+    sort = request.GET.get('sort', '') or ''
+    sort_map = {
+        'name-asc':   'name',
+        'name-desc':  '-name',
+        'price-low':  'price',
+        'price-high': '-price',
+    }
+    if sort in sort_map:
+        products = products.order_by(sort_map[sort])
+
+    data = []
+    for p in products:
+        data.append({
+            'id':          str(p.id),
+            'name':        p.name,
+            'category':    p.category.name,
+            'description': p.description,
+            'price':       str(p.price),
+            'image':       p.image.url,
+            'in_stock':    p.in_stock,
+            'is_new':      p.is_new,
+            'is_featured': p.is_featured,
+        })
+
+    return JsonResponse({'products': data})
 
 
