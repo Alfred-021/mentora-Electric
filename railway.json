@@ -1,0 +1,8 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "gunicorn mentora_Electrics.wsgi --bind 0.0.0.0:$PORT --log-file -"
+  }
+}
