@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'mentora_Electrics.apps.MongoContentTypesConfig',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage', 
     'django.contrib.staticfiles',
+    'cloudinary',
     'core'
 ]
 
@@ -79,16 +81,20 @@ WSGI_APPLICATION = 'mentora_Electrics.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # Use MongoDB via django-mongodb-backend.
 
+MONGO_URI = os.environ.get('MONGO_URI')
+
+if not MONGO_URI:
+    raise ValueError("MONGO_URI environment variable is not set!")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
         'NAME': 'mentora_db',
         'CLIENT': {
-            'host': os.getenv('MONGO_URI')
+            'host': MONGO_URI,
+        }
     }
 }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -132,10 +138,10 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
     'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
 }
 
@@ -153,4 +159,9 @@ DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-print("MONGODB URI:", os.getenv('MONGODB_URI'))
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY':    os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
