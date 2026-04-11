@@ -2,17 +2,16 @@ services:
   - type: web
     name: mentora-electric
     runtime: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn mentora_Electrics.wsgi --bind 0.0.0.0:$PORT --log-file -
+    pythonVersion: "3.12.9"
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn mentora_Electrics.wsgi --bind 0.0.0.0:$PORT --log-file -"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
+      - key: DEBUG
+        value: "False"
       - key: SECRET_KEY
         sync: false
       - key: MONGO_URI
         sync: false
-      - key: DEBUG
-        value: "False"
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
