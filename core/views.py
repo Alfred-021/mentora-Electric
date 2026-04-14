@@ -19,7 +19,7 @@ def _cart_count(request):
 # ----------------------
 
 def home(request):
-    products = Product.objects.select_related('category').all()  # ← always defined first
+    products = Product.objects.all()[:8] # ← always defined first
     categories = Category.objects.all()
 
     # 🔍 SEARCH

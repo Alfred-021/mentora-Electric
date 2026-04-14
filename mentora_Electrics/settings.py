@@ -91,7 +91,9 @@ DATABASES = {
         'ENGINE': 'django_mongodb_backend',
         'NAME': 'mentora_db',
         'CLIENT': {
-            'host': MONGO_URI,
+            'host': os.environ.get("MONGO_URI"),
+            'serverSelectionTimeoutMS': 5000,
+            'connectTimeoutMS': 5000,
         }
     }
 }
