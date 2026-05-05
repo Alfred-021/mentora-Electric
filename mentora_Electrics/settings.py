@@ -87,19 +87,19 @@ MONGO_URI = os.environ.get('MONGO_URI')
 if not MONGO_URI:
     raise ValueError("MONGO_URI environment variable is not set!")
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django_mongodb_backend',
-#         'NAME': 'mentora_db',
-#         'CLIENT': {
-#             'host': os.environ.get("MONGO_URI"),
-#             'serverSelectionTimeoutMS': 30000,
-#             'connectTimeoutMS': 30000,
-#             'socketTimeoutMS': 30000,
-#             'retryWrites': True,
-#         }
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django_mongodb_backend',
+        'NAME': 'mentora_db',
+        'CLIENT': {
+            'host': os.environ.get("MONGO_URI"),
+            'serverSelectionTimeoutMS': 30000,
+            'connectTimeoutMS': 30000,
+            'socketTimeoutMS': 30000,
+            'retryWrites': True,
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
