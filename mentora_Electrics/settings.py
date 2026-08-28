@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
@@ -37,15 +38,15 @@ PORT= os.environ.get("PORT", "8000")
 # Application definition
 
 INSTALLED_APPS = [
-    'mentora_Electrics.apps.MongoAdminConfig',
-    'mentora_Electrics.apps.MongoAuthConfig',
-    'mentora_Electrics.apps.MongoContentTypesConfig',
+   'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage', 
+    'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -83,23 +84,12 @@ WSGI_APPLICATION = 'mentora_Electrics.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # Use MongoDB via django-mongodb-backend.
 
-MONGO_URI = os.environ.get('MONGO_URI')
-
-if not MONGO_URI:
-    raise ValueError("MONGO_URI environment variable is not set!")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django_mongodb_backend',
-        'NAME': 'mentora_db',
-        'CLIENT': {
-            'host': os.environ.get("MONGO_URI"),
-            'serverSelectionTimeoutMS': 30000,
-            'connectTimeoutMS': 30000,
-            'socketTimeoutMS': 30000,
-            'retryWrites': True,
-        }
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
 
 # Password validation
@@ -153,13 +143,8 @@ STORAGES = {
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-MIGRATION_MODULES = {
-    'admin': 'mongo_migrations.admin',
-    'auth': 'mongo_migrations.auth',
-    'contenttypes': 'mongo_migrations.contenttypes',
-}
 
-DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
